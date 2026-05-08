@@ -1,0 +1,704 @@
+{
+	"info": {
+		"name": "企业信息展示小程序 - API测试",
+		"description": "企业信息展示小程序后端接口测试集合",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "小程序端接口",
+			"item": [
+				{
+					"name": "1. 轮播图",
+					"item": [
+						{
+							"name": "获取轮播图列表",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/banner/list",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "banner", "list"]
+								},
+								"description": "获取所有启用的轮播图，按排序序号升序排列"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "2. 公司信息",
+					"item": [
+						{
+							"name": "获取公司简介",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/company/info",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "company", "info"]
+								},
+								"description": "获取公司基本信息"
+							},
+							"response": []
+						},
+						{
+							"name": "获取新闻列表",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/company/news?page=1&size=10",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "company", "news"],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "页码，默认1"
+										},
+										{
+											"key": "size",
+											"value": "10",
+											"description": "每页数量，默认10"
+										}
+									]
+								},
+								"description": "分页获取已发布的新闻列表"
+							},
+							"response": []
+						},
+						{
+							"name": "获取公告列表",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/company/announcement?page=1&size=10",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "company", "announcement"],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "页码，默认1"
+										},
+										{
+											"key": "size",
+											"value": "10",
+											"description": "每页数量，默认10"
+										}
+									]
+								},
+								"description": "分页获取公告列表，置顶公告排在前面"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "3. 产品",
+					"item": [
+						{
+							"name": "获取产品分类",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/product/categories",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "product", "categories"]
+								},
+								"description": "获取所有启用的产品分类"
+							},
+							"response": []
+						},
+						{
+							"name": "获取产品列表",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/product/list?page=1&size=10",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "product", "list"],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "页码"
+										},
+										{
+											"key": "size",
+											"value": "10",
+											"description": "每页数量"
+										},
+										{
+											"key": "keyword",
+											"value": "",
+											"description": "搜索关键词（可选）",
+											"disabled": true
+										},
+										{
+											"key": "categoryId",
+											"value": "",
+											"description": "分类ID（可选）",
+											"disabled": true
+										}
+									]
+								},
+								"description": "分页获取产品列表，支持关键词搜索和分类筛选"
+							},
+							"response": []
+						},
+						{
+							"name": "获取产品详情",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/product/detail/1",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "product", "detail", "1"]
+								},
+								"description": "根据产品ID获取产品详细信息"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "4. 联系方式",
+					"item": [
+						{
+							"name": "获取联系信息",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/contact/info",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "contact", "info"]
+								},
+								"description": "获取公司联系方式和工作时间"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "5. 文件上传",
+					"item": [
+						{
+							"name": "上传图片",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/path/to/your/image.jpg",
+											"description": "选择要上传的图片文件"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/upload/image",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "upload", "image"]
+								},
+								"description": "上传图片文件，返回访问URL。支持 JPG、PNG、GIF、WebP 格式，最大10MB"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "管理端接口",
+			"item": [
+				{
+					"name": "0. 登录认证",
+					"item": [
+						{
+							"name": "管理员登录",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"if (jsonData.code === 0 && jsonData.data && jsonData.data.token) {",
+											"    pm.environment.set('token', jsonData.data.token);",
+											"    console.log('Token已保存:', jsonData.data.token);",
+											"} else {",
+											"    console.error('登录失败:', jsonData.message);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/admin/login",
+									"host": ["{{baseUrl}}"],
+									"path": ["admin", "login"]
+								},
+								"description": "管理员登录，成功后自动保存Token到环境变量"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "1. 轮播图管理",
+					"item": [
+						{
+							"name": "新增轮播图",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"image\": \"/uploads/banner1.jpg\",\n  \"title\": \"轮播图标题\",\n  \"link\": \"/pages/detail/1\",\n  \"sortOrder\": 1,\n  \"status\": 1\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/banner",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "banner"]
+								},
+								"description": "新增轮播图"
+							},
+							"response": []
+						},
+						{
+							"name": "更新轮播图",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"image\": \"/uploads/banner1_updated.jpg\",\n  \"title\": \"更新后的标题\",\n  \"link\": \"/pages/detail/2\",\n  \"sortOrder\": 2,\n  \"status\": 1\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/banner/1",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "banner", "1"]
+								},
+								"description": "更新指定ID的轮播图"
+							},
+							"response": []
+						},
+						{
+							"name": "删除轮播图",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/banner/1",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "banner", "1"]
+								},
+								"description": "删除指定ID的轮播图"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "2. 新闻管理",
+					"item": [
+						{
+							"name": "新增新闻",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"企业新闻标题\",\n  \"summary\": \"新闻摘要内容\",\n  \"content\": \"新闻详细内容...\",\n  \"image\": \"/uploads/news1.jpg\",\n  \"status\": 1\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/news",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "news"]
+								},
+								"description": "新增新闻，status: 0-草稿, 1-发布"
+							},
+							"response": []
+						},
+						{
+							"name": "更新新闻",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"更新后的新闻标题\",\n  \"summary\": \"更新后的摘要\",\n  \"content\": \"更新后的内容...\",\n  \"image\": \"/uploads/news1_updated.jpg\",\n  \"status\": 1\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/news/1",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "news", "1"]
+								},
+								"description": "更新指定ID的新闻"
+							},
+							"response": []
+						},
+						{
+							"name": "删除新闻",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/news/1",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "news", "1"]
+								},
+								"description": "删除指定ID的新闻"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "3. 产品管理",
+					"item": [
+						{
+							"name": "新增产品",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"productNo\": \"PRD001\",\n  \"name\": \"产品名称\",\n  \"spec\": \"规格A\",\n  \"model\": \"型号X\",\n  \"price\": 580.00,\n  \"categoryId\": \"cat001\",\n  \"images\": \"[\\\"/uploads/product1.jpg\\\"]\",\n  \"description\": \"产品详细描述\",\n  \"status\": 1\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/product",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "product"]
+								},
+								"description": "新增产品，images为JSON数组字符串"
+							},
+							"response": []
+						},
+						{
+							"name": "更新产品",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"productNo\": \"PRD001\",\n  \"name\": \"更新后的产品名称\",\n  \"spec\": \"规格B\",\n  \"model\": \"型号Y\",\n  \"price\": 680.00,\n  \"categoryId\": \"cat001\",\n  \"images\": \"[\\\"/uploads/product1_updated.jpg\\\"]\",\n  \"description\": \"更新后的描述\",\n  \"status\": 1\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/product/1",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "product", "1"]
+								},
+								"description": "更新指定ID的产品"
+							},
+							"response": []
+						},
+						{
+							"name": "删除产品",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/product/1",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "product", "1"]
+								},
+								"description": "删除指定ID的产品"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "4. 分类管理",
+					"item": [
+						{
+							"name": "新增分类",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"id\": \"cat003\",\n  \"name\": \"新分类名称\",\n  \"parentId\": null,\n  \"sortOrder\": 3,\n  \"status\": 1\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/category",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "category"]
+								},
+								"description": "新增产品分类，parentId为null表示顶级分类"
+							},
+							"response": []
+						},
+						{
+							"name": "更新分类",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"更新后的分类名称\",\n  \"parentId\": null,\n  \"sortOrder\": 5,\n  \"status\": 1\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/category/cat003",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "category", "cat003"]
+								},
+								"description": "更新指定ID的分类"
+							},
+							"response": []
+						},
+						{
+							"name": "删除分类",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/category/cat003",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "category", "cat003"]
+								},
+								"description": "删除指定ID的分类"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "5. 公司信息管理",
+					"item": [
+						{
+							"name": "保存公司信息",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"companyName\": \"企业名称\",\n  \"description\": \"公司简介详细内容...\",\n  \"logo\": \"/uploads/logo.png\",\n  \"address\": \"深圳市南山区科技园\",\n  \"phone\": \"0755-88888888\",\n  \"email\": \"contact@example.com\",\n  \"wechat\": \"CompanyWechat\",\n  \"latitude\": 22.5431,\n  \"longitude\": 114.0579,\n  \"workdayTime\": \"周一至周五 09:00 - 18:00\",\n  \"weekendTime\": \"周六 09:00 - 12:00\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/company",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "admin", "company"]
+								},
+								"description": "保存公司信息，如果已存在则更新，否则新增"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
