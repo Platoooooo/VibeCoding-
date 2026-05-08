@@ -1,0 +1,51 @@
+<wxs module="utils" src="../../utils.wxs"></wxs>
+
+<view class="container">
+  <!-- 加载遮罩层 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 公司信息内容 -->
+  <view class="company-info-content" wx:if="{{companyInfo && !loading}}">
+    <!-- 公司头部 -->
+    <view class="company-header card">
+      <image 
+        wx:if="{{companyInfo.logo}}" 
+        src="{{utils.BASE_URL}}{{companyInfo.logo}}" 
+        class="company-logo"
+        mode="aspectFit"></image>
+      <view class="company-logo-placeholder" wx:else>🏢</view>
+      <view class="company-name">{{companyInfo.companyName || companyInfo.company_name || '公司名称'}}</view>
+    </view>
+
+    <!-- 公司简介 -->
+    <view class="company-desc card">
+      <view class="card-title">公司简介</view>
+      <view class="desc-text">{{companyInfo.description || '暂无公司简介'}}</view>
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="company-contact card" wx:if="{{companyInfo.phone || companyInfo.address || companyInfo.email}}">
+      <view class="card-title">联系方式</view>
+      <view class="contact-item" wx:if="{{companyInfo.phone}}">
+        <text class="contact-label">电话：</text>
+        <text class="contact-value">{{companyInfo.phone}}</text>
+      </view>
+      <view class="contact-item" wx:if="{{companyInfo.address}}">
+        <text class="contact-label">地址：</text>
+        <text class="contact-value">{{companyInfo.address}}</text>
+      </view>
+      <view class="contact-item" wx:if="{{companyInfo.email}}">
+        <text class="contact-label">邮箱：</text>
+        <text class="contact-value">{{companyInfo.email}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!loading && !companyInfo}}">
+    <text>暂无公司信息</text>
+  </view>
+</view>

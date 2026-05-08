@@ -1,0 +1,117 @@
+<view class="container">
+  <!-- 加载遮罩层 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 产品内容 -->
+  <view class="product-content" wx:if="{{product && !loading}}">
+  <!-- 产品图片轮播 -->
+  <view class="product-images-section">
+    <swiper 
+      indicator-dots
+      autoplay
+      circular
+      interval="3000"
+      indicator-color="rgba(255,255,255,0.5)"
+      indicator-active-color="#ffffff"
+      bindchange="onImageChange"
+      class="product-swiper"
+      wx:if="{{images.length > 0}}">
+      <block wx:for="{{images}}" wx:key="index">
+        <swiper-item>
+          <image 
+            src="{{baseUrl}}{{item}}" 
+            mode="widthFix" 
+            class="product-image"
+            bindtap="onImageTap"
+            data-index="{{index}}"
+            bindlongpress="onImageLongPress"
+            data-index="{{index}}"></image>
+        </swiper-item>
+      </block>
+    </swiper>
+    
+    <!-- 无图片占位 -->
+    <view class="product-image-placeholder" wx:if="{{images.length === 0}}">
+      <text>暂无图片</text>
+    </view>
+
+    <!-- 图片指示器 -->
+    <view class="image-indicator" wx:if="{{images.length > 1}}">
+      {{currentImageIndex + 1}} / {{images.length}}
+    </view>
+  </view>
+
+  <!-- 产品基本信息 -->
+  <view class="product-info card">
+    <view class="product-name">{{product.name}}</view>
+    
+    <!-- 产品型号（顶部显示） -->
+    <view class="product-model" wx:if="{{product.model}}">
+      <text class="label">型号：</text>
+      <text class="value">{{product.model}}</text>
+    </view>
+
+    <!-- 产品编号 -->
+    <view class="product-no" wx:if="{{product.productNo}}">
+      <text class="label">编号：</text>
+      <text class="value">{{product.productNo}}</text>
+    </view>
+
+    <!-- 产品价格 -->
+    <view class="product-price">
+      <text class="price-symbol">¥</text>
+      <text class="price-value">{{product.price}}</text>
+      <text class="price-unit" wx:if="{{product.unit}}">/{{product.unit}}</text>
+    </view>
+
+    <!-- 产品分类 -->
+    <view class="product-category" wx:if="{{product.categoryName}}">
+      <text class="label">分类：</text>
+      <text class="value">{{product.categoryName}}</text>
+    </view>
+  </view>
+
+  <!-- 产品规格 -->
+  <view class="product-spec card" wx:if="{{product.spec}}">
+    <view class="card-title">产品规格</view>
+    <view class="spec-content">{{product.spec}}</view>
+  </view>
+
+  <!-- 产品特性 -->
+  <view class="product-features card" wx:if="{{features.length > 0}}">
+    <view class="card-title">产品特性</view>
+    <view class="feature-list">
+      <view class="feature-item" wx:for="{{features}}" wx:key="index">
+        <text class="feature-icon">✓</text>
+        <text class="feature-text">{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 产品描述 -->
+  <view class="product-description card" wx:if="{{product.description}}">
+    <view class="card-title">产品详情</view>
+    <view class="description-content">{{product.description}}</view>
+  </view>
+
+  <!-- 提示信息 -->
+  <view class="tips-section">
+    <view class="tip-item">
+      <text class="tip-icon">💡</text>
+      <text class="tip-text">点击图片可查看大图</text>
+    </view>
+    <view class="tip-item">
+      <text class="tip-icon">📱</text>
+      <text class="tip-text">长按图片可保存到相册</text>
+    </view>
+  </view>
+</view>
+</view>
+
+<!-- 加载状态 -->
+<view class="loading" wx:if="{{!product}}">
+  <text>加载中...</text>
+</view>

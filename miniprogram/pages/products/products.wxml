@@ -1,0 +1,98 @@
+<wxs module="utils" src="../../utils.wxs"></wxs>
+
+<view class="container">
+  <!-- 加载遮罩层 -->
+  <view class="loading-mask" wx:if="{{loading && products.length === 0}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input-wrap">
+      <input 
+        class="search-input" 
+        placeholder="搜索产品"
+        value="{{keyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"/>
+      <view wx:if="{{keyword}}" class="search-clear" catchtap="onSearchClear">
+        <icon type="clear" size="18"></icon>
+      </view>
+    </view>
+    <button class="filter-btn" bindtap="toggleFilter">筛选</button>
+  </view>
+
+  <!-- 筛选条件显示 -->
+  <view class="filter-tags" wx:if="{{categoryName}}">
+    <view class="filter-tag">
+      <text>{{categoryName}}</text>
+      <text class="tag-close" bindtap="resetFilter">×</text>
+    </view>
+  </view>
+
+  <!-- 筛选面板 -->
+  <view class="filter-panel" wx:if="{{showFilter}}">
+    <view class="filter-section">
+      <view class="filter-title">产品分类</view>
+      <view class="filter-options">
+        <view 
+          class="filter-option {{selectedCategory === item.id ? 'active' : ''}}"
+          wx:for="{{filteredCategories}}"
+          wx:key="id"
+          bindtap="onSelectCategory"
+          data-id="{{item.id}}"
+          data-name="{{item.name}}">
+          {{item.name}}
+        </view>
+      </view>
+    </view>
+    <view class="filter-actions">
+      <button class="btn-default" bindtap="resetFilter">重置</button>
+      <button class="btn-primary" bindtap="applyFilter">确定</button>
+    </view>
+  </view>
+
+  <!-- 产品列表 - 两列布局 -->
+  <view class="product-grid" wx:if="{{products.length > 0}}">
+    <view 
+      class="product-grid-item"
+      wx:for="{{products}}"
+      wx:key="id"
+      bindtap="onProductTap"
+      data-id="{{item.id}}">
+      <view class="product-card card">
+        <view class="product-images">
+          <image 
+            wx:if="{{item.firstImage}}"
+            src="{{utils.BASE_URL}}{{item.firstImage}}" 
+            mode="aspectFill"
+            class="product-image"></image>
+          <view class="product-image-placeholder" wx:else>📦</view>
+        </view>
+        <view class="product-info">
+          <view class="product-name text-ellipsis-2">{{item.name}}</view>
+          <view class="product-meta">
+            <text class="product-category">{{item.categoryName || '未分类'}}</text>
+          </view>
+          <view class="product-price">¥{{item.price}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:elif="{{!loading}}">
+    <text>暂无产品</text>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="loading" wx:if="{{loading && products.length > 0}}">
+    <text>正在加载...</text>
+  </view>
+
+  <!-- 没有更多 -->
+  <view class="loading no-more" wx:if="{{!hasMore && products.length > 0}}">
+    <text>没有更多了</text>
+  </view>
+</view>

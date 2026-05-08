@@ -1,0 +1,98 @@
+<view class="container">
+  <!-- 加载遮罩层 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 公司信息卡片 -->
+  <view class="contact-card card" wx:if="{{contactInfo}}">
+    <view class="company-title">
+      <view class="company-icon">🏢</view>
+      <view class="company-name">{{contactInfo.companyName || '公司名称'}}</view>
+    </view>
+
+    <!-- 地址 -->
+    <view class="info-item" wx:if="{{contactInfo.address}}">
+      <view class="info-icon">📍</view>
+      <view class="info-content">
+        <view class="info-label">公司地址</view>
+        <view class="info-value">{{contactInfo.address}}</view>
+      </view>
+    </view>
+
+    <!-- 电话 -->
+    <view class="info-item" wx:if="{{contactInfo.phone}}">
+      <view class="info-icon">📞</view>
+      <view class="info-content">
+        <view class="info-label">联系电话</view>
+        <view class="info-value">{{contactInfo.phone}}</view>
+      </view>
+      <view class="info-action" bindtap="onCallPhone">拨打</view>
+    </view>
+
+    <!-- 邮箱 -->
+    <view class="info-item" wx:if="{{contactInfo.email}}">
+      <view class="info-icon">✉️</view>
+      <view class="info-content">
+        <view class="info-label">电子邮箱</view>
+        <view class="info-value">{{contactInfo.email}}</view>
+      </view>
+      <view class="info-action" bindtap="onCopyEmail">复制</view>
+    </view>
+
+    <!-- 微信 -->
+    <view class="info-item" wx:if="{{contactInfo.wechat}}">
+      <view class="info-icon">💬</view>
+      <view class="info-content">
+        <view class="info-label">微信公众号</view>
+        <view class="info-value">{{contactInfo.wechat}}</view>
+      </view>
+      <view class="info-action" bindtap="onCopyWechat">复制</view>
+    </view>
+  </view>
+
+  <!-- 工作时间 -->
+  <view class="worktime-card card" wx:if="{{contactInfo}}">
+    <view class="card-title">工作时间</view>
+    <view class="worktime-list">
+      <view class="worktime-item" wx:if="{{workdayTime}}">
+        <view class="worktime-label">工作日</view>
+        <view class="worktime-value">{{workdayTime}}</view>
+      </view>
+      <view class="worktime-item" wx:if="{{weekendTime}}">
+        <view class="worktime-label">周末</view>
+        <view class="worktime-value">{{weekendTime}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 地图区域 -->
+  <view class="map-card card" wx:if="{{contactInfo && contactInfo.latitude && contactInfo.longitude}}">
+    <view class="card-title">公司位置</view>
+    <map
+      class="contact-map"
+      latitude="{{latitude}}"
+      longitude="{{longitude}}"
+      scale="16"
+      markers="{{markers}}"
+      show-location
+      enable-scroll="false">
+    </map>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!contactInfo}}">
+    <text>暂无联系信息</text>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons" wx:if="{{contactInfo}}">
+    <button class="btn-primary action-btn" bindtap="onCallPhone" wx:if="{{contactInfo.phone}}">
+      📞 拨打电话
+    </button>
+    <button class="btn-primary action-btn" bindtap="onNavigate" wx:if="{{contactInfo.latitude && contactInfo.longitude}}">
+      📍 导航到这里
+    </button>
+  </view>
+</view>

@@ -1,0 +1,58 @@
+<wxs module="utils" src="../../utils.wxs"></wxs>
+
+<view class="container">
+  <!-- 加载遮罩层 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!loading && newsList.length === 0}}">
+    <text>暂无新闻</text>
+  </view>
+
+  <!-- 新闻列表 -->
+  <view class="news-list" wx:if="{{!loading && newsList.length > 0}}">
+    <view 
+      class="news-card card"
+      wx:for="{{newsList}}"
+      wx:key="id"
+      bindtap="goToDetail"
+      data-id="{{item.id}}">
+      <view class="news-image-wrap" wx:if="{{item.coverImage}}">
+        <image 
+          src="{{utils.BASE_URL}}{{item.coverImage}}" 
+          mode="aspectFill"
+          class="news-image"></image>
+      </view>
+      <view class="news-image-wrap" wx:elif="{{item.image}}">
+        <image 
+          src="{{utils.BASE_URL}}{{item.image}}" 
+          mode="aspectFill"
+          class="news-image"></image>
+      </view>
+      <view class="news-no-image" wx:else>📰</view>
+      <view class="news-content">
+        <view class="news-title text-ellipsis-2">{{item.title}}</view>
+        <view class="news-summary text-ellipsis-2" wx:if="{{item.summary || item.description}}">
+          {{item.summary || item.description}}
+        </view>
+        <view class="news-footer">
+          <text class="news-date">{{item.publishDate || item.createdAt || item.created_at}}</text>
+          <text class="news-views" wx:if="{{item.viewCount}}">阅读 {{item.viewCount}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="loading" wx:if="{{loadingMore}}">
+    <text>正在加载...</text>
+  </view>
+
+  <!-- 没有更多 -->
+  <view class="no-more" wx:if="{{!hasMore && newsList.length > 0}}">
+    <text>没有更多了</text>
+  </view>
+</view>

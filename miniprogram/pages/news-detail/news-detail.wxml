@@ -1,0 +1,43 @@
+<wxs module="utils" src="../../utils.wxs"></wxs>
+
+<view class="container">
+  <!-- 加载遮罩层 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 新闻内容 -->
+  <view class="news-content-page" wx:if="{{news && !loading}}">
+    <!-- 新闻封面图 -->
+    <view class="news-cover" wx:if="{{news.coverImage}}">
+      <image 
+        src="{{utils.BASE_URL}}{{news.coverImage}}" 
+        mode="aspectFill"
+        class="cover-image"
+        bindtap="onCoverImageTap"></image>
+    </view>
+    <view class="news-cover" wx:elif="{{news.image}}">
+      <image 
+        src="{{utils.BASE_URL}}{{news.image}}" 
+        mode="aspectFill"
+        class="cover-image"
+        bindtap="onCoverImageTap"></image>
+    </view>
+
+    <!-- 新闻标题 -->
+    <view class="news-header card">
+      <view class="news-title">{{news.title}}</view>
+      <view class="news-meta">
+        <text class="news-date">{{news.publishDate || news.created_at}}</text>
+        <text class="news-views" wx:if="{{news.viewCount}}">阅读 {{news.viewCount}}</text>
+      </view>
+    </view>
+
+    <!-- 新闻内容 -->
+    <view class="news-content card">
+      <view class="card-title">正文</view>
+      <view class="content-text">{{news.content}}</view>
+    </view>
+  </view>
+</view>

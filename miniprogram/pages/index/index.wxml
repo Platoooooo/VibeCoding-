@@ -1,0 +1,125 @@
+<wxs module="utils" src="../../utils.wxs"></wxs>
+
+<view class="container">
+  <!-- 加载遮罩层 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 轮播图区域 -->
+  <view class="banner-section" wx:if="{{banners.length > 0}}">
+    <swiper 
+      indicator-dots 
+      autoplay 
+      circular 
+      interval="3000"
+      indicator-color="rgba(255,255,255,0.5)"
+      indicator-active-color="#ffffff"
+      class="banner-swiper">
+      <block wx:for="{{banners}}" wx:key="id">
+        <swiper-item>
+          <image 
+            src="{{utils.BASE_URL}}{{item.imageUrl || item.image}}" 
+            mode="aspectFill" 
+            class="banner-image"
+            bindtap="onBannerTap"
+            data-link="{{item.linkUrl || item.link}}"
+            data-title="{{item.title}}"></image>
+        </swiper-item>
+      </block>
+    </swiper>
+  </view>
+
+  <!-- 公司信息卡片 -->
+  <view class="company-card card" wx:if="{{companyInfo}}">
+    <view class="card-header">
+      <view class="card-title">公司简介</view>
+      <view class="card-more" bindtap="goToCompanyInfo">查看更多 ›</view>
+    </view>
+    <view class="company-header">
+      <image 
+        wx:if="{{companyInfo.logo}}" 
+        src="{{utils.BASE_URL}}{{companyInfo.logo}}" 
+        class="company-logo"
+        mode="aspectFit"></image>
+      <view class="company-logo-placeholder" wx:else>🏢</view>
+      <view class="company-name">{{companyInfo.companyName || companyInfo.company_name || '公司名称'}}</view>
+    </view>
+    <view class="company-desc text-ellipsis-3">{{companyInfo.description || '暂无公司简介'}}</view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-entry card">
+    <view class="card-title">快捷入口</view>
+    <view class="entry-grid">
+      <view class="entry-item" bindtap="goToProducts">
+        <view class="entry-icon">📦</view>
+        <view class="entry-text">产品展示</view>
+      </view>
+      <view class="entry-item" bindtap="goToCategory">
+        <view class="entry-icon">📁</view>
+        <view class="entry-text">分类浏览</view>
+      </view>
+      <view class="entry-item" bindtap="goToContact">
+        <view class="entry-icon">📞</view>
+        <view class="entry-text">联系我们</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 系统公告区域 -->
+  <view class="announcement-section card">
+    <view class="card-header">
+      <view class="card-title">系统公告</view>
+      <view class="card-more" bindtap="goToAnnouncementList">查看更多 ›</view>
+    </view>
+    <view wx:if="{{announcementList.length > 0}}">
+      <view 
+        class="announcement-item" 
+        wx:for="{{announcementList}}" 
+        wx:key="id"
+        bindtap="goToAnnouncementDetail"
+        data-id="{{item.id}}">
+        <view class="announcement-badge">公告</view>
+        <view class="announcement-content">
+          <view class="text-ellipsis">{{item.title}}</view>
+          <view class="announcement-date">{{item.publishDate || item.created_at}}</view>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+    <view wx:else class="empty-tip">暂无公告</view>
+  </view>
+
+  <!-- 企业新闻区域 -->
+  <view class="news-section card">
+    <view class="card-header">
+      <view class="card-title">企业新闻</view>
+      <view class="card-more" bindtap="goToNewsList">查看更多 ›</view>
+    </view>
+    <view wx:if="{{newsList.length > 0}}">
+      <view 
+        class="news-item" 
+        wx:for="{{newsList}}" 
+        wx:key="id"
+        bindtap="goToNewsDetail"
+        data-id="{{item.id}}">
+        <view class="news-left">
+          <image 
+            wx:if="{{item.coverImage || item.image}}" 
+            src="{{utils.BASE_URL}}{{item.coverImage || item.image}}" 
+            mode="aspectFill"
+            class="news-image"></image>
+          <view class="news-image-placeholder" wx:else>📰</view>
+        </view>
+        <view class="news-right">
+          <view class="news-title text-ellipsis-2">{{item.title}}</view>
+          <view class="news-date">{{item.publishDate || item.created_at}}</view>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+    <view wx:else class="empty-tip">暂无新闻</view>
+  </view>
+</view>

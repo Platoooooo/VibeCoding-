@@ -1,0 +1,11 @@
+// 全局常量
+var BASE_URL = 'http://localhost:8080';
+
+function getBaseUrl() {
+  return BASE_URL;
+}
+
+module.exports = {
+  getBaseUrl: getBaseUrl,
+  BASE_URL: BASE_URL
+}

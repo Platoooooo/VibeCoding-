@@ -1,0 +1,44 @@
+<view class="container">
+  <!-- 加载遮罩层 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!loading && announcementList.length === 0}}">
+    <text>暂无公告</text>
+  </view>
+
+  <!-- 公告列表 -->
+  <view class="announcement-list" wx:if="{{!loading && announcementList.length > 0}}">
+    <view 
+      class="announcement-card card"
+      wx:for="{{announcementList}}"
+      wx:key="id"
+      bindtap="goToDetail"
+      data-id="{{item.id}}">
+      <view class="announcement-header">
+        <view class="announcement-badge">公告</view>
+        <view class="announcement-title text-ellipsis-2">{{item.title}}</view>
+      </view>
+      <view class="announcement-content text-ellipsis-2" wx:if="{{item.content}}">
+        {{item.content}}
+      </view>
+      <view class="announcement-footer">
+        <text class="announcement-date">{{item.publishDate || item.createdAt || item.created_at}}</text>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="loading" wx:if="{{loadingMore}}">
+    <text>正在加载...</text>
+  </view>
+
+  <!-- 没有更多 -->
+  <view class="no-more" wx:if="{{!hasMore && announcementList.length > 0}}">
+    <text>没有更多了</text>
+  </view>
+</view>

@@ -1,0 +1,39 @@
+<wxs module="utils" src="../../utils.wxs"></wxs>
+
+<view class="container">
+  <!-- 加载遮罩层 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{!loading && categories.length === 0}}">
+    <text>暂无产品分类</text>
+  </view>
+
+  <!-- 分类列表 -->
+  <view class="category-list" wx:if="{{!loading && categories.length > 0}}">
+    <view 
+      class="category-item card" 
+      wx:for="{{categories}}" 
+      wx:key="id"
+      bindtap="onCategoryTap"
+      data-id="{{item.id}}"
+      data-name="{{item.name}}">
+      <view class="category-icon-wrap">
+        <image 
+          wx:if="{{item.image}}"
+          src="{{utils.BASE_URL}}{{item.image}}" 
+          mode="aspectFill"
+          class="category-image"></image>
+        <view class="category-icon-placeholder" wx:else>📦</view>
+      </view>
+      <view class="category-info">
+        <view class="category-name">{{item.name}}</view>
+        <view class="category-hint">点击查看该分类下的产品</view>
+      </view>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+</view>

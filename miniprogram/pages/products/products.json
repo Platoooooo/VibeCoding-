@@ -1,0 +1,5 @@
+{
+  "navigationBarTitleText": "所有产品",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 50
+}
