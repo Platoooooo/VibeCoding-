@@ -1,0 +1,31 @@
+域名地址
+
+https://springboot-gdul-247850-5-1303955298.sh.run.tcloudbase.com
+
+小程序/公众号调用
+wx.cloud.callContainer({
+  "config": {
+    "env": "wxzz-prod-d3gt095g9c25f1d72"
+  },
+  "path": "/api/count",
+  "header": {
+    "X-WX-SERVICE": "springboot-gdul"
+  },
+  "method": "POST",
+  "data": {
+    "action": "inc"
+  }
+})
+
+模板源代码
+代码源
+
+github
+
+仓库地址
+
+WeixinCloud/wxcloudrun-springboot
+
+数据库 
+账号:root
+密码:vru9vXnx

@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业管理后台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
+        .login-container { max-width: 400px; margin: 100px auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .login-container h2 { text-align: center; margin-bottom: 20px; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #666; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .btn { padding: 8px 16px; background: #1890ff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn:hover { background: #40a9ff; }
+        .admin-container { display: none; }
+        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 200px; background: #001529; color: white; }
+        .sidebar h3 { padding: 20px; text-align: center; border-bottom: 1px solid #002140; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #002140; }
+        .sidebar li:hover, .sidebar li.active { background: #1890ff; }
+        .main-content { margin-left: 200px; padding: 20px; }
+        .header { background: white; padding: 15px 20px; margin-bottom: 20px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .content-area { background: white; padding: 20px; border-radius: 4px; min-height: 500px; }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #fafafa; font-weight: 600; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; margin-right: 5px; width: auto; }
+        .btn-danger { background: #ff4d4f; }
+        .btn-danger:hover { background: #ff7875; }
+        .btn-success { background: #52c41a; }
+        .btn-success:hover { background: #73d13d; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-close { cursor: pointer; font-size: 24px; color: #999; }
+        .form-row { margin-bottom: 15px; }
+        .form-row label { display: block; margin-bottom: 5px; color: #666; font-size: 14px; }
+        .form-row input, .form-row textarea, .form-row select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .form-row textarea { min-height: 100px; resize: vertical; }
+        .msg { padding: 10px; margin-bottom: 15px; border-radius: 4px; }
+        .msg-success { background: #f6ffed; border: 1px solid #b7eb8f; color: #52c41a; }
+        .msg-error { background: #fff2f0; border: 1px solid #ffccc7; color: #ff4d4f; }
+        .upload-box { display: flex; align-items: center; gap: 10px; }
+        .upload-box input[type="file"] { flex: 1; }
+        .upload-preview { max-width: 100px; max-height: 100px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn-upload { background: #faad14; }
+        .btn-upload:hover { background: #ffc53d; }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div class="login-container" id="loginPage">
+        <h2>管理后台登录</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" id="username" required placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="password" required placeholder="请输入密码">
+            </div>
+            <button type="submit" class="btn">登录</button>
+        </form>
+    </div>
+
+    <!-- 管理后台 -->
+    <div class="admin-container" id="adminPage">
+        <div class="sidebar">
+            <h3>管理后台</h3>
+            <ul>
+                <li class="active" data-page="banner">轮播图管理</li>
+                <li data-page="news">新闻管理</li>
+                <li data-page="announcement">公告管理</li>
+                <li data-page="product">产品管理</li>
+                <li data-page="category">分类管理</li>
+                <li data-page="company">公司信息</li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="header">
+                <h2 id="pageTitle">轮播图管理</h2>
+                <button class="btn btn-sm" onclick="logout()">退出登录</button>
+            </div>
+            <div class="content-area" id="contentArea">
+                <!-- 动态内容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">添加</h3>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="modalForm">
+                <div id="modalFields"></div>
+                <button type="submit" class="btn">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let token = localStorage.getItem('token');
+        let currentPage = 'banner';
+        let editId = null;
+
+        // 检查登录状态
+        if (token) {
+            showAdminPage();
+        }
+
+        // 登录
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch('/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (data.code === 0) {
+                    token = data.data.token;
+                    localStorage.setItem('token', token);
+                    showAdminPage();
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                alert('登录失败: ' + err.message);
+            }
+        });
+
+        function showAdminPage() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('adminPage').style.display = 'block';
+            loadPage('banner');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            token = null;
+            location.reload();
+        }
+
+        // 侧边栏导航
+        document.querySelectorAll('.sidebar li').forEach(li => {
+            li.addEventListener('click', () => {
+                document.querySelectorAll('.sidebar li').forEach(l => l.classList.remove('active'));
+                li.classList.add('active');
+                loadPage(li.dataset.page);
+            });
+        });
+
+        async function loadPage(page) {
+            currentPage = page;
+            editId = null;
+            const titles = { banner: '轮播图管理', news: '新闻管理', announcement: '公告管理', product: '产品管理', category: '分类管理', company: '公司信息' };
+            document.getElementById('pageTitle').textContent = titles[page];
+
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = '<p>加载中...</p>';
+
+            switch (page) {
+                case 'banner': await loadBanners(); break;
+                case 'news': await loadNews(); break;
+                case 'announcement': await loadAnnouncements(); break;
+                case 'product': await loadProducts(); break;
+                case 'category': await loadCategories(); break;
+                case 'company': await loadCompanyInfo(); break;
+            }
+        }
+
+        // ==================== 轮播图管理 ====================
+        async function loadBanners() {
+            try {
+                const res = await fetch(`${API_BASE}/banner/list`);
+                const data = await res.json();
+                const banners = data.data || [];
+
+                let html = `
+                    <button class="btn btn-success" onclick="showAddBanner()" style="margin-bottom: 15px;">+ 添加轮播图</button>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>ID</th><th>图片</th><th>标题</th><th>链接</th><th>排序</th><th>操作</th></tr></thead>
+                            <tbody>
+                `;
+                if (banners.length === 0) {
+                    html += '<tr><td colspan="6" style="text-align:center;color:#999;">暂无数据</td></tr>';
+                } else {
+                    banners.forEach(b => {
+                        html += `<tr>
+                            <td>${b.id}</td>
+                            <td><img src="${b.image}" style="max-width: 100px; max-height: 50px;" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%2250%22><rect fill=%22%23eee%22 width=%22100%22 height=%2250%22/><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%23999%22>无图片</text></svg>'"></td>
+                            <td>${b.title || '-'}</td>
+                            <td>${b.link || '-'}</td>
+                            <td>${b.sortOrder}</td>
+                            <td>
+                                <button class="btn btn-sm" onclick="editBanner(${b.id})">编辑</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteBanner(${b.id})">删除</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+                html += '</tbody></table></div>';
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (err) {
+                document.getElementById('contentArea').innerHTML = '<p class="msg msg-error">加载失败: ' + err.message + '</p>';
+            }
+        }
+
+        function showAddBanner() {
+            editId = null;
+            showModal('添加轮播图', `
+                ${createImageUploadRow('图片 *', 'image', '', 'bannerPreview')}
+                <div class="form-row"><label>标题</label><input type="text" name="title"></div>
+                <div class="form-row"><label>链接</label><input type="text" name="link" placeholder="/pages/detail/1"></div>
+                <div class="form-row"><label>排序</label><input type="number" name="sortOrder" value="0"></div>
+            `, async (form) => {
+                const data = Object.fromEntries(new FormData(form).entries());
+                data.sortOrder = parseInt(data.sortOrder) || 0;
+                data.status = 1;
+                await apiRequest(`${API_BASE}/admin/banner`, 'POST', data);
+                closeModal();
+                loadBanners();
+            });
+        }
+
+        async function editBanner(id) {
+            try {
+                const res = await fetch(`${API_BASE}/banner/list`);
+                const data = await res.json();
+                const banner = (data.data || []).find(b => b.id === id);
+                if (!banner) { alert('轮播图不存在'); return; }
+
+                editId = id;
+                showModal('编辑轮播图', `
+                    ${createImageUploadRow('图片 *', 'image', banner.image, 'bannerPreview')}
+                    <div class="form-row"><label>标题</label><input type="text" name="title" value="${banner.title || ''}"></div>
+                    <div class="form-row"><label>链接</label><input type="text" name="link" value="${banner.link || ''}"></div>
+                    <div class="form-row"><label>排序</label><input type="number" name="sortOrder" value="${banner.sortOrder}"></div>
+                `, async (form) => {
+                    const data = Object.fromEntries(new FormData(form).entries());
+                    data.sortOrder = parseInt(data.sortOrder) || 0;
+                    data.status = 1;
+                    await apiRequest(`${API_BASE}/admin/banner/${id}`, 'PUT', data);
+                    closeModal();
+                    loadBanners();
+                });
+            } catch (err) {
+                alert('获取数据失败: ' + err.message);
+            }
+        }
+
+        async function deleteBanner(id) {
+            if (!confirm('确定删除此轮播图？')) return;
+            await apiRequest(`${API_BASE}/admin/banner/${id}`, 'DELETE');
+            loadBanners();
+        }
+
+        // ==================== 新闻管理 ====================
+        async function loadNews() {
+            try {
+                const res = await fetch(`${API_BASE}/company/news?page=1&size=100`);
+                const data = await res.json();
+                const news = data.data?.list || [];
+
+                let html = `
+                    <button class="btn btn-success" onclick="showAddNews()" style="margin-bottom: 15px;">+ 添加新闻</button>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>ID</th><th>标题</th><th>摘要</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+                            <tbody>
+                `;
+                if (news.length === 0) {
+                    html += '<tr><td colspan="6" style="text-align:center;color:#999;">暂无数据</td></tr>';
+                } else {
+                    news.forEach(n => {
+                        html += `<tr>
+                            <td>${n.id}</td>
+                            <td>${n.title}</td>
+                            <td>${n.summary ? n.summary.substring(0, 30) + '...' : '-'}</td>
+                            <td>${n.status === 1 ? '<span style="color:#52c41a">已发布</span>' : '<span style="color:#999">草稿</span>'}</td>
+                            <td>${n.createdAt ? n.createdAt.substring(0, 10) : '-'}</td>
+                            <td>
+                                <button class="btn btn-sm" onclick="editNews(${n.id})">编辑</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteNews(${n.id})">删除</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+                html += '</tbody></table></div>';
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (err) {
+                document.getElementById('contentArea').innerHTML = '<p class="msg msg-error">加载失败: ' + err.message + '</p>';
+            }
+        }
+
+        function showAddNews() {
+            editId = null;
+            showModal('添加新闻', `
+                <div class="form-row"><label>标题 *</label><input type="text" name="title" required></div>
+                <div class="form-row"><label>摘要</label><input type="text" name="summary"></div>
+                <div class="form-row"><label>内容 *</label><textarea name="content" required></textarea></div>
+                ${createImageUploadRow('封面图', 'image', '', 'newsPreview')}
+                <div class="form-row"><label>状态</label><select name="status"><option value="0">草稿</option><option value="1" selected>发布</option></select></div>
+            `, async (form) => {
+                const data = Object.fromEntries(new FormData(form).entries());
+                data.status = parseInt(data.status);
+                await apiRequest(`${API_BASE}/admin/news`, 'POST', data);
+                closeModal();
+                loadNews();
+            });
+        }
+
+        async function editNews(id) {
+            try {
+                const res = await fetch(`${API_BASE}/company/news?page=1&size=100`);
+                const data = await res.json();
+                const item = (data.data?.list || []).find(n => n.id === id);
+                if (!item) { alert('新闻不存在'); return; }
+
+                editId = id;
+                showModal('编辑新闻', `
+                    <div class="form-row"><label>标题 *</label><input type="text" name="title" value="${item.title}" required></div>
+                    <div class="form-row"><label>摘要</label><input type="text" name="summary" value="${item.summary || ''}"></div>
+                    <div class="form-row"><label>内容 *</label><textarea name="content" required>${item.content || ''}</textarea></div>
+                    ${createImageUploadRow('封面图', 'image', item.image || '', 'newsPreview')}
+                    <div class="form-row"><label>状态</label><select name="status"><option value="0" ${item.status === 0 ? 'selected' : ''}>草稿</option><option value="1" ${item.status === 1 ? 'selected' : ''}>发布</option></select></div>
+                `, async (form) => {
+                    const data = Object.fromEntries(new FormData(form).entries());
+                    data.status = parseInt(data.status);
+                    await apiRequest(`${API_BASE}/admin/news/${id}`, 'PUT', data);
+                    closeModal();
+                    loadNews();
+                });
+            } catch (err) {
+                alert('获取数据失败: ' + err.message);
+            }
+        }
+
+        async function deleteNews(id) {
+            if (!confirm('确定删除此新闻？')) return;
+            await apiRequest(`${API_BASE}/admin/news/${id}`, 'DELETE');
+            loadNews();
+        }
+
+        // ==================== 公告管理 ====================
+        async function loadAnnouncements() {
+            try {
+                const res = await fetch(`${API_BASE}/company/announcement?page=1&size=100`);
+                const data = await res.json();
+                const announcements = data.data?.list || [];
+
+                let html = `
+                    <button class="btn btn-success" onclick="showAddAnnouncement()" style="margin-bottom: 15px;">+ 添加公告</button>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>ID</th><th>标题</th><th>内容</th><th>置顶</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+                            <tbody>
+                `;
+                if (announcements.length === 0) {
+                    html += '<tr><td colspan="7" style="text-align:center;color:#999;">暂无数据</td></tr>';
+                } else {
+                    announcements.forEach(a => {
+                        html += `<tr>
+                            <td>${a.id}</td>
+                            <td>${a.title}</td>
+                            <td>${a.content ? a.content.substring(0, 30) + '...' : '-'}</td>
+                            <td>${a.isTop ? '<span style="color:#ff4d4f">是</span>' : '<span style="color:#999">否</span>'}</td>
+                            <td>${a.status === 1 ? '<span style="color:#52c41a">启用</span>' : '<span style="color:#999">禁用</span>'}</td>
+                            <td>${a.createdAt ? a.createdAt.substring(0, 10) : '-'}</td>
+                            <td>
+                                <button class="btn btn-sm" onclick="editAnnouncement(${a.id})">编辑</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteAnnouncement(${a.id})">删除</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+                html += '</tbody></table></div>';
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (err) {
+                document.getElementById('contentArea').innerHTML = '<p class="msg msg-error">加载失败: ' + err.message + '</p>';
+            }
+        }
+
+        function showAddAnnouncement() {
+            editId = null;
+            showModal('添加公告', `
+                <div class="form-row"><label>标题 *</label><input type="text" name="title" required></div>
+                <div class="form-row"><label>内容 *</label><textarea name="content" required></textarea></div>
+                <div class="form-row"><label>置顶</label><select name="isTop"><option value="false" selected>否</option><option value="true">是</option></select></div>
+                <div class="form-row"><label>状态</label><select name="status"><option value="0">禁用</option><option value="1" selected>启用</option></select></div>
+            `, async (form) => {
+                const data = Object.fromEntries(new FormData(form).entries());
+                data.isTop = data.isTop === 'true';
+                data.status = parseInt(data.status);
+                await apiRequest(`${API_BASE}/admin/announcement`, 'POST', data);
+                closeModal();
+                loadAnnouncements();
+            });
+        }
+
+        async function editAnnouncement(id) {
+            try {
+                const res = await fetch(`${API_BASE}/company/announcement?page=1&size=100`);
+                const data = await res.json();
+                const item = (data.data?.list || []).find(a => a.id === id);
+                if (!item) { alert('公告不存在'); return; }
+
+                editId = id;
+                showModal('编辑公告', `
+                    <div class="form-row"><label>标题 *</label><input type="text" name="title" value="${item.title}" required></div>
+                    <div class="form-row"><label>内容 *</label><textarea name="content" required>${item.content || ''}</textarea></div>
+                    <div class="form-row"><label>置顶</label><select name="isTop"><option value="false" ${!item.isTop ? 'selected' : ''}>否</option><option value="true" ${item.isTop ? 'selected' : ''}>是</option></select></div>
+                    <div class="form-row"><label>状态</label><select name="status"><option value="0" ${item.status === 0 ? 'selected' : ''}>禁用</option><option value="1" ${item.status === 1 ? 'selected' : ''}>启用</option></select></div>
+                `, async (form) => {
+                    const data = Object.fromEntries(new FormData(form).entries());
+                    data.isTop = data.isTop === 'true';
+                    data.status = parseInt(data.status);
+                    await apiRequest(`${API_BASE}/admin/announcement/${id}`, 'PUT', data);
+                    closeModal();
+                    loadAnnouncements();
+                });
+            } catch (err) {
+                alert('获取数据失败: ' + err.message);
+            }
+        }
+
+        async function deleteAnnouncement(id) {
+            if (!confirm('确定删除此公告？')) return;
+            await apiRequest(`${API_BASE}/admin/announcement/${id}`, 'DELETE');
+            loadAnnouncements();
+        }
+
+        // ==================== 产品管理 ====================
+        async function loadProducts() {
+            try {
+                const res = await fetch(`${API_BASE}/product/list?page=1&size=100`);
+                const data = await res.json();
+                const products = data.data?.list || [];
+
+                let html = `
+                    <button class="btn btn-success" onclick="showAddProduct()" style="margin-bottom: 15px;">+ 添加产品</button>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>ID</th><th>缩略图</th><th>编号</th><th>名称</th><th>规格</th><th>价格</th><th>分类</th><th>操作</th></tr></thead>
+                            <tbody>
+                `;
+                if (products.length === 0) {
+                    html += '<tr><td colspan="8" style="text-align:center;color:#999;">暂无数据</td></tr>';
+                } else {
+                    products.forEach(p => {
+                        // 解析图片URL（从JSON数组中取第一张）
+                        let thumbnailUrl = '';
+                        try {
+                            const images = JSON.parse(p.images || '[]');
+                            if (images.length > 0) thumbnailUrl = images[0];
+                        } catch (e) {
+                            thumbnailUrl = p.images || '';
+                        }
+                        
+                        html += `<tr>
+                            <td>${p.id}</td>
+                            <td>${thumbnailUrl ? `<img src="${thumbnailUrl}" style="max-width: 50px; max-height: 50px; border-radius: 4px;" onerror="this.style.display='none'">` : '-'}</td>
+                            <td>${p.productNo}</td>
+                            <td>${p.name}</td>
+                            <td>${p.spec || '-'}</td>
+                            <td>¥${p.price}</td>
+                            <td>${p.categoryName || p.categoryId}</td>
+                            <td>
+                                <button class="btn btn-sm" onclick="editProduct(${p.id})">编辑</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.id})">删除</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+                html += '</tbody></table></div>';
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (err) {
+                document.getElementById('contentArea').innerHTML = '<p class="msg msg-error">加载失败: ' + err.message + '</p>';
+            }
+        }
+
+        function showAddProduct() {
+            editId = null;
+            showModal('添加产品', `
+                <div class="form-row"><label>产品编号 *</label><input type="text" name="productNo" required placeholder="PRD001"></div>
+                <div class="form-row"><label>产品名称 *</label><input type="text" name="name" required></div>
+                <div class="form-row"><label>规格</label><input type="text" name="spec"></div>
+                <div class="form-row"><label>型号</label><input type="text" name="model"></div>
+                <div class="form-row"><label>价格 *</label><input type="number" step="0.01" name="price" required></div>
+                <div class="form-row"><label>分类ID *</label><input type="text" name="categoryId" required placeholder="cat001"></div>
+                ${createImageUploadRow('产品图片', 'image', '', 'productPreview')}
+                <div class="form-row"><label>描述</label><textarea name="description"></textarea></div>
+            `, async (form) => {
+                const data = Object.fromEntries(new FormData(form).entries());
+                // 价格保持为字符串，由后端BigDecimal自动处理，避免parseFloat精度问题
+                data.status = 1;
+                // 将单个图片URL转换为JSON数组格式
+                if (data.image) {
+                    data.images = JSON.stringify([data.image]);
+                    delete data.image;
+                }
+                console.log('提交的产品数据:', data);
+                await apiRequest(`${API_BASE}/admin/product`, 'POST', data);
+                closeModal();
+                loadProducts();
+            });
+        }
+
+        async function editProduct(id) {
+            try {
+                const res = await fetch(`${API_BASE}/product/detail/${id}`);
+                const result = await res.json();
+                const p = result.data;
+                if (!p) { alert('产品不存在'); return; }
+
+                // 解析图片URL（从JSON数组中取第一张）
+                let imageUrl = '';
+                try {
+                    const images = JSON.parse(p.images || '[]');
+                    if (images.length > 0) imageUrl = images[0];
+                } catch (e) {
+                    imageUrl = p.images || '';
+                }
+
+                editId = id;
+                showModal('编辑产品', `
+                    <div class="form-row"><label>产品编号 *</label><input type="text" name="productNo" value="${p.productNo}" required></div>
+                    <div class="form-row"><label>产品名称 *</label><input type="text" name="name" value="${p.name}" required></div>
+                    <div class="form-row"><label>规格</label><input type="text" name="spec" value="${p.spec || ''}"></div>
+                    <div class="form-row"><label>型号</label><input type="text" name="model" value="${p.model || ''}"></div>
+                    <div class="form-row"><label>价格 *</label><input type="number" step="0.01" name="price" value="${p.price}" required></div>
+                    <div class="form-row"><label>分类ID *</label><input type="text" name="categoryId" value="${p.categoryId}" required></div>
+                    ${createImageUploadRow('产品图片', 'image', imageUrl, 'productPreview')}
+                    <div class="form-row"><label>描述</label><textarea name="description">${p.description || ''}</textarea></div>
+                `, async (form) => {
+                    const data = Object.fromEntries(new FormData(form).entries());
+                    // 价格保持为字符串，由后端BigDecimal自动处理，避免parseFloat精度问题
+                    data.status = 1;
+                    // 将单个图片URL转换为JSON数组格式
+                    if (data.image) {
+                        data.images = JSON.stringify([data.image]);
+                        delete data.image;
+                    }
+                    console.log('更新的产品数据:', data);
+                    await apiRequest(`${API_BASE}/admin/product/${id}`, 'PUT', data);
+                    closeModal();
+                    loadProducts();
+                });
+            } catch (err) {
+                alert('获取数据失败: ' + err.message);
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('确定删除此产品？')) return;
+            await apiRequest(`${API_BASE}/admin/product/${id}`, 'DELETE');
+            loadProducts();
+        }
+
+        // ==================== 分类管理 ====================
+        async function loadCategories() {
+            try {
+                const res = await fetch(`${API_BASE}/product/categories`);
+                const data = await res.json();
+                const categories = data.data || [];
+
+                let html = `
+                    <button class="btn btn-success" onclick="showAddCategory()" style="margin-bottom: 15px;">+ 添加分类</button>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>ID</th><th>图片</th><th>名称</th><th>父分类</th><th>排序</th><th>操作</th></tr></thead>
+                            <tbody>
+                `;
+                if (categories.length === 0) {
+                    html += '<tr><td colspan="6" style="text-align:center;color:#999;">暂无数据</td></tr>';
+                } else {
+                    categories.forEach(c => {
+                        html += `<tr>
+                            <td>${c.id}</td>
+                            <td>${c.image ? `<img src="${c.image}" style="max-width: 50px; max-height: 50px; border-radius: 4px;" onerror="this.style.display='none'">` : '-'}</td>
+                            <td>${c.name}</td>
+                            <td>${c.parentId || '-'}</td>
+                            <td>${c.sortOrder}</td>
+                            <td>
+                                <button class="btn btn-sm" onclick="editCategory('${c.id}')">编辑</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteCategory('${c.id}')">删除</button>
+                            </td>
+                        </tr>`;
+                    });
+                }
+                html += '</tbody></table></div>';
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (err) {
+                document.getElementById('contentArea').innerHTML = '<p class="msg msg-error">加载失败: ' + err.message + '</p>';
+            }
+        }
+
+        function showAddCategory() {
+            editId = null;
+            showModal('添加分类', `
+                <div class="form-row"><label>分类ID *</label><input type="text" name="id" required placeholder="cat001"></div>
+                <div class="form-row"><label>分类名称 *</label><input type="text" name="name" required></div>
+                ${createImageUploadRow('分类图片', 'image', '', 'categoryPreview')}
+                <div class="form-row"><label>父分类ID</label><input type="text" name="parentId" placeholder="留空为顶级分类"></div>
+                <div class="form-row"><label>排序</label><input type="number" name="sortOrder" value="0"></div>
+            `, async (form) => {
+                const data = Object.fromEntries(new FormData(form).entries());
+                console.log('提交的分类数据:', data);
+                data.sortOrder = parseInt(data.sortOrder) || 0;
+                data.status = 1;
+                if (!data.parentId) data.parentId = null;
+                console.log('处理后的数据:', data);
+                const result = await apiRequest(`${API_BASE}/admin/category`, 'POST', data);
+                console.log('服务器响应:', result);
+                closeModal();
+                loadCategories();
+            });
+        }
+
+        async function editCategory(id) {
+            try {
+                const res = await fetch(`${API_BASE}/product/categories`);
+                const data = await res.json();
+                const cat = (data.data || []).find(c => c.id === id);
+                if (!cat) { alert('分类不存在'); return; }
+
+                editId = id;
+                showModal('编辑分类', `
+                    <div class="form-row"><label>分类ID</label><input type="text" value="${cat.id}" disabled></div>
+                    <div class="form-row"><label>分类名称 *</label><input type="text" name="name" value="${cat.name}" required></div>
+                    ${createImageUploadRow('分类图片', 'image', cat.image || '', 'categoryPreview')}
+                    <div class="form-row"><label>父分类ID</label><input type="text" name="parentId" value="${cat.parentId || ''}"></div>
+                    <div class="form-row"><label>排序</label><input type="number" name="sortOrder" value="${cat.sortOrder}"></div>
+                `, async (form) => {
+                    const data = Object.fromEntries(new FormData(form).entries());
+                    console.log('提交的更新分类数据:', data);
+                    data.sortOrder = parseInt(data.sortOrder) || 0;
+                    data.status = 1;
+                    if (!data.parentId) data.parentId = null;
+                    console.log('处理后的更新数据:', data);
+                    const result = await apiRequest(`${API_BASE}/admin/category/${id}`, 'PUT', data);
+                    console.log('服务器响应:', result);
+                    closeModal();
+                    loadCategories();
+                });
+            } catch (err) {
+                alert('获取数据失败: ' + err.message);
+            }
+        }
+
+        async function deleteCategory(id) {
+            if (!confirm('确定删除此分类？')) return;
+            await apiRequest(`${API_BASE}/admin/category/${id}`, 'DELETE');
+            loadCategories();
+        }
+
+        // ==================== 公司信息 ====================
+        async function loadCompanyInfo() {
+            try {
+                const res = await fetch(`${API_BASE}/company/info`);
+                const data = await res.json();
+                const info = data.data || {};
+
+                let html = `
+                    <div id="companyMsg"></div>
+                    <form id="companyForm">
+                        <div class="form-row"><label>公司名称</label><input type="text" name="companyName" value="${info.companyName || ''}"></div>
+                        <div class="form-row"><label>公司简介</label><textarea name="description">${info.description || ''}</textarea></div>
+                        <div class="form-row">
+                            <label>Logo</label>
+                            <div class="upload-box">
+                                <input type="text" name="logo" id="companyLogoUrl" value="${info.logo || ''}" placeholder="Logo URL或上传图片" style="flex:1">
+                                <input type="file" accept="image/*" onchange="uploadCompanyLogo(this)">
+                            </div>
+                            ${info.logo ? `<img src="${info.logo}" class="upload-preview" style="margin-top:10px">` : ''}
+                        </div>
+                        <div class="form-row"><label>地址</label><input type="text" name="address" value="${info.address || ''}"></div>
+                        <div class="form-row"><label>电话</label><input type="text" name="phone" value="${info.phone || ''}"></div>
+                        <div class="form-row"><label>邮箱</label><input type="text" name="email" value="${info.email || ''}"></div>
+                        <div class="form-row"><label>微信</label><input type="text" name="wechat" value="${info.wechat || ''}"></div>
+                        <div class="form-row"><label>纬度</label><input type="number" step="0.0000001" name="latitude" value="${info.latitude || ''}"></div>
+                        <div class="form-row"><label>经度</label><input type="number" step="0.0000001" name="longitude" value="${info.longitude || ''}"></div>
+                        <div class="form-row"><label>工作时间（工作日）</label><input type="text" name="workdayTime" value="${info.workdayTime || ''}" placeholder="周一至周五 09:00 - 18:00"></div>
+                        <div class="form-row"><label>工作时间（周末）</label><input type="text" name="weekendTime" value="${info.weekendTime || ''}" placeholder="周六 09:00 - 12:00"></div>
+                        <button type="submit" class="btn">保存公司信息</button>
+                    </form>
+                `;
+                document.getElementById('contentArea').innerHTML = html;
+
+                document.getElementById('companyForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const data = Object.fromEntries(formData.entries());
+                    if (data.latitude) data.latitude = parseFloat(data.latitude);
+                    if (data.longitude) data.longitude = parseFloat(data.longitude);
+
+                    const result = await apiRequest(`${API_BASE}/admin/company`, 'POST', data);
+                    const msgDiv = document.getElementById('companyMsg');
+                    if (result && result.code === 0) {
+                        msgDiv.innerHTML = '<div class="msg msg-success">保存成功！</div>';
+                        setTimeout(() => msgDiv.innerHTML = '', 3000);
+                    } else {
+                        msgDiv.innerHTML = '<div class="msg msg-error">保存失败: ' + (result?.message || '未知错误') + '</div>';
+                    }
+                });
+            } catch (err) {
+                document.getElementById('contentArea').innerHTML = '<p class="msg msg-error">加载失败: ' + err.message + '</p>';
+            }
+        }
+
+        // ==================== 通用工具函数 ====================
+        
+        // 图片上传函数
+        async function uploadImage(fileInput) {
+            const file = fileInput.files[0];
+            if (!file) return null;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const res = await fetch('/api/upload/image', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.code === 0) {
+                    return data.data.url;
+                } else {
+                    alert('上传失败: ' + data.message);
+                    return null;
+                }
+            } catch (err) {
+                alert('上传失败: ' + err.message);
+                return null;
+            }
+        }
+        
+        // 创建带上传的图片输入框
+        function createImageUploadRow(label, name, currentValue = '', previewId = null) {
+            const previewHtml = previewId ? `<img id="${previewId}" src="${currentValue}" class="upload-preview" style="display:${currentValue ? 'block' : 'none'}">` : '';
+            return `
+                <div class="form-row">
+                    <label>${label}</label>
+                    <div class="upload-box">
+                        <input type="text" name="${name}" value="${currentValue}" placeholder="图片URL或上传图片" style="flex:1">
+                        <input type="file" accept="image/*" onchange="handleImageUpload(this, '${name}', '${previewId || ''}')">
+                    </div>
+                    ${previewHtml}
+                </div>
+            `;
+        }
+        
+        // 处理图片上传
+        async function handleImageUpload(fileInput, targetInputName, previewId) {
+            const url = await uploadImage(fileInput);
+            if (url) {
+                // 找到对应的文本输入框并设置URL
+                const modalFields = document.getElementById('modalFields');
+                const textInput = modalFields.querySelector(`input[name="${targetInputName}"]`);
+                if (textInput) {
+                    textInput.value = url;
+                }
+                // 更新预览
+                if (previewId) {
+                    const preview = document.getElementById(previewId);
+                    if (preview) {
+                        preview.src = url;
+                        preview.style.display = 'block';
+                    }
+                }
+            }
+        }
+
+        async function apiRequest(url, method, body = null) {
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (body && method !== 'DELETE') {
+                options.body = JSON.stringify(body);
+            }
+            try {
+                const res = await fetch(url, options);
+                const data = await res.json();
+                if (data.code === 0) {
+                    return data;
+                } else {
+                    alert('操作失败: ' + data.message);
+                    return null;
+                }
+            } catch (err) {
+                alert('请求失败: ' + err.message);
+                return null;
+            }
+        }
+
+        function showModal(title, fields, onSubmit) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalFields').innerHTML = fields;
+            document.getElementById('modal').classList.add('show');
+
+            const form = document.getElementById('modalForm');
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                await onSubmit(form);
+            };
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+            document.getElementById('modalForm').onsubmit = null;
+        }
+
+        // 点击模态框外部关闭 - 修复拖拽选中文字时误关闭的问题
+        let isMouseDownInContent = false;
+        
+        const modalElement = document.getElementById('modal');
+        const modalContentElement = modalElement.querySelector('.modal-content');
+        
+        // 记录鼠标按下时的位置
+        modalElement.addEventListener('mousedown', (e) => {
+            // 如果点击的是内容区域，标记为 true
+            isMouseDownInContent = modalContentElement.contains(e.target);
+        });
+        
+        // 在鼠标释放时判断是否应该关闭
+        modalElement.addEventListener('mouseup', (e) => {
+            // 只有当鼠标按下和释放都在遮罩层背景上时才关闭
+            if (!isMouseDownInContent && e.target.id === 'modal') {
+                closeModal();
+            }
+            isMouseDownInContent = false; // 重置标记
+        });
+
+        // 公司 Logo 上传
+        async function uploadCompanyLogo(fileInput) {
+            const url = await uploadImage(fileInput);
+            if (url) {
+                document.getElementById('companyLogoUrl').value = url;
+            }
+        }
+    </script>
+</body>
+</html>

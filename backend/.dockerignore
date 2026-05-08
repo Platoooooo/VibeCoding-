@@ -1,0 +1,25 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.jar
+!target/*.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.eclipse/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Tests
+src/test/

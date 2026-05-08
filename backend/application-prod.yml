@@ -1,0 +1,71 @@
+# 生产环境配置
+server:
+  port: ${SERVER_PORT:8080}
+  # 生产环境建议启用 HTTPS
+  # ssl:
+  #   enabled: true
+  #   key-store: classpath:keystore.p12
+  #   key-store-password: your-password
+  #   key-store-type: PKCS12
+
+spring:
+  datasource:
+    # 生产环境请使用环境变量配置数据库连接
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/company_miniprogram?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:your-strong-password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    
+    # HikariCP 连接池配置（生产环境优化）
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+
+  jpa:
+    hibernate:
+      # 生产环境使用 validate，避免自动修改表结构
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        # 启用二级缓存（可选）
+        # cache.use_second_level_cache: true
+        # cache.region.factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+
+# JWT 配置（生产环境务必使用强密钥）
+jwt:
+  secret: ${JWT_SECRET:CHANGE-THIS-TO-A-VERY-LONG-RANDOM-STRING-IN-PRODUCTION-ENVIRONMENT}
+  expiration: 86400000  # 24小时
+
+# 管理端配置
+admin:
+  username: ${ADMIN_USERNAME:admin}
+  password: ${ADMIN_PASSWORD:CHANGE-THIS-PASSWORD}
+
+# 日志配置
+logging:
+  level:
+    root: WARN
+    com.company.miniprogram: INFO
+  file:
+    name: logs/application.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 1GB
+
+# Actuator 监控端点（可选）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
