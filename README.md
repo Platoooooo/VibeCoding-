@@ -226,7 +226,7 @@ npm test
 |------|------|------|
 | JaCoCo | 代码覆盖率 | 最低 35% 行覆盖率 |
 | Checkstyle | 代码风格检查 | `checkstyle.xml` |
-| SpotBugs | 静态缺陷检测 | Low 阈值，Max 努力 |
+| SpotBugs | 静态缺陷检测 | Medium 阈值，Max 努力，排除 Lombok/Spring 注入误报 (`spotbugs-exclude.xml`) |
 
 ## CI/CD
 
@@ -234,6 +234,7 @@ npm test
 
 - **触发条件**: 推送到 `main`/`master`/`cc` 分支，或 PR 到 `main`/`master`
 - **流水线步骤**: 编译 → 测试 → 测试报告 → Checkstyle → 打包
+- **权限配置**: `checks: write`（测试报告发布）、`contents: read`（代码检出）
 - Checkstyle 结果为 `continue-on-error`，不阻塞构建
 
 ## 部署说明

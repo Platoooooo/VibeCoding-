@@ -1,0 +1,16 @@
+<FindBugsFilter>
+  <!-- Lombok @Data generates mutable getters/setters for DTOs -->
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    <Package name="com.company.miniprogram.dto"/>
+  </Match>
+  <!-- Spring constructor injection is safe — injected beans are framework-managed -->
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2"/>
+    <Package name="com.company.miniprogram.controller"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2"/>
+    <Package name="com.company.miniprogram.config"/>
+  </Match>
+</FindBugsFilter>
