@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn test *)",
+      "Bash(mvn compile *)",
+      "Bash(mvn spring-boot:run *)",
+      "Bash(mvn checkstyle:check *)",
+      "Bash(mvn jacoco:report *)",
+      "Read(//c/Users/84765/.claude/skills/git-assistant/references/gitignore_templates/**)",
+      "Bash(bash ~/.claude/skills/git-assistant/scripts/repo_status.sh)",
+      "Bash(bash ~/.claude/skills/git-assistant/scripts/scan_secrets.sh)",
+      "Bash(bash ~/.claude/skills/git-assistant/scripts/check_large_files.sh)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  },
+  "mcpServers": {
+    "mysql": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@benborla29/mcp-server-mysql"
+      ],
+      "env": {
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "",
+        "MYSQL_DATABASE": "company_miniprogram"
+      }
+    },
+    "fetch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic-ai/mcp-server-fetch"
+      ]
+    }
+  }
+}
