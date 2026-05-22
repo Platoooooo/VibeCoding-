@@ -1,4 +1,5 @@
-const api = require('../../request.js');
+var api = require('../../request.js');
+var config = require('../../config.js');
 
 Page({
   data: {
@@ -8,18 +9,18 @@ Page({
     currentImageIndex: 0,
     showImagePreview: false,
     previewImages: [],
-    baseUrl: 'http://localhost:8080'
+    baseUrl: config.baseUrl
   },
 
-  onLoad(options) {
-    const { id } = options;
-    // 获取 baseUrl
-    const app = getApp();
-    const baseUrl = app.globalData.baseUrl || 'http://localhost:8080';
-    this.setData({ baseUrl });
-    
+  onLoad: function(options) {
+    var id = options.id;
+    var self = this;
+    var app = getApp();
+    var baseUrl = (app.globalData && app.globalData.baseUrl) || config.baseUrl;
+    self.setData({ baseUrl: baseUrl });
+
     if (id) {
-      this.loadProductDetail(id, baseUrl);
+      self.loadProductDetail(id, baseUrl);
     } else {
       wx.showToast({
         title: '产品不存在',
@@ -29,72 +30,69 @@ Page({
     }
   },
 
-  async loadProductDetail(id, baseUrl) {
+  loadProductDetail: function(id, baseUrl) {
+    var self = this;
     try {
-      this.setData({ loading: true });
-      
-      const product = await api.getProductDetail(id);
-      // 使用传入的 baseUrl，确保能立即使用
-      if (!baseUrl) {
-        const app = getApp();
-        baseUrl = app.globalData.baseUrl || 'http://localhost:8080';
-      }
-      
-      // 处理图片
-      let images = [];
-      if (product.images) {
-        // 如果是JSON字符串，解析
-        try {
-          images = JSON.parse(product.images);
-        } catch (e) {
-          // 如果不是JSON，可能是逗号分隔的字符串
-          images = product.images.split(',').filter(img => img.trim());
-        }
-      }
-      
-      // 处理特性
-      let features = [];
-      if (product.features) {
-        try {
-          features = JSON.parse(product.features);
-        } catch (e) {
-          features = product.features.split(',').filter(f => f.trim());
-        }
-      }
+      self.setData({ loading: true });
 
-      // 准备预览图片（完整的URL）
-      const previewImages = images.map(img => baseUrl + img);
+      api.getProductDetail(id).then(function(product) {
+        if (!baseUrl) {
+          var app = getApp();
+          baseUrl = (app.globalData && app.globalData.baseUrl) || config.baseUrl;
+        }
 
-      this.setData({
-        loading: false,
-        product,
-        images,
-        features,
-        previewImages,
-        baseUrl
+        var images = [];
+        if (product.images) {
+          try {
+            images = JSON.parse(product.images);
+          } catch (e) {
+            images = product.images.split(',').filter(function(img) { return img.trim(); });
+          }
+        }
+
+        var features = [];
+        if (product.features) {
+          try {
+            features = JSON.parse(product.features);
+          } catch (e) {
+            features = product.features.split(',').filter(function(f) { return f.trim(); });
+          }
+        }
+
+        var previewImages = images.map(function(img) { return baseUrl + img; });
+
+        self.setData({
+          loading: false,
+          product: product,
+          images: images,
+          features: features,
+          previewImages: previewImages,
+          baseUrl: baseUrl
+        });
+      }).catch(function(err) {
+        console.error('加载产品详情失败:', err);
+        self.setData({ loading: false });
+        wx.showToast({
+          title: '加载失败',
+          icon: 'none'
+        });
+        wx.navigateBack();
       });
-    } catch (err) {
-      console.error('加载产品详情失败:', err);
-      this.setData({ loading: false });
-      wx.showToast({
-        title: '加载失败',
-        icon: 'none'
-      });
-      wx.navigateBack();
+    } catch (e) {
+      console.error('加载产品详情异常:', e);
+      self.setData({ loading: false });
     }
   },
 
-  // 图片切换
-  onImageChange(e) {
-    const { current } = e.detail;
+  onImageChange: function(e) {
+    var current = e.detail.current;
     this.setData({
       currentImageIndex: current
     });
   },
 
-  // 点击图片，预览大图
-  onImageTap(e) {
-    const { index } = e.currentTarget.dataset;
+  onImageTap: function(e) {
+    var index = e.currentTarget.dataset.index;
     if (this.data.previewImages.length > 0) {
       wx.previewImage({
         current: this.data.previewImages[index],
@@ -103,29 +101,29 @@ Page({
     }
   },
 
-  // 长按图片保存
-  onImageLongPress(e) {
-    const { index } = e.currentTarget.dataset;
-    const url = this.data.previewImages[index];
-    
+  onImageLongPress: function(e) {
+    var index = e.currentTarget.dataset.index;
+    var url = this.data.previewImages[index];
+    var self = this;
+
     wx.showModal({
       title: '保存图片',
       content: '是否保存该图片到相册？',
-      success: (res) => {
+      success: function(res) {
         if (res.confirm) {
           wx.downloadFile({
             url: url,
-            success: (downloadRes) => {
+            success: function(downloadRes) {
               if (downloadRes.statusCode === 200) {
                 wx.saveImageToPhotosAlbum({
                   filePath: downloadRes.tempFilePath,
-                  success: () => {
+                  success: function() {
                     wx.showToast({
                       title: '保存成功',
                       icon: 'success'
                     });
                   },
-                  fail: () => {
+                  fail: function() {
                     wx.showToast({
                       title: '保存失败',
                       icon: 'none'
@@ -134,7 +132,7 @@ Page({
                 });
               }
             },
-            fail: () => {
+            fail: function() {
               wx.showToast({
                 title: '下载失败',
                 icon: 'none'
@@ -146,8 +144,7 @@ Page({
     });
   },
 
-  // 返回上一页
-  onBack() {
+  onBack: function() {
     wx.navigateBack();
   }
 });

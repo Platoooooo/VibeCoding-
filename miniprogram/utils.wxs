@@ -1,4 +1,6 @@
-// 全局常量
+// 全局常量 - 图片资源基础URL
+// 注意：WXS 文件无法引用 JS 模块，修改此值后需同步修改 config.js
+// 部署前请将此处改为线上地址：https://api.your-domain.com
 var BASE_URL = 'http://localhost:8080';
 
 function getBaseUrl() {
@@ -8,4 +10,4 @@ function getBaseUrl() {
 module.exports = {
   getBaseUrl: getBaseUrl,
   BASE_URL: BASE_URL
-}
+};
