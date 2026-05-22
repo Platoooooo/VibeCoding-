@@ -1,0 +1,26 @@
+# Cursor AI 编码规则 — 企业信息展示小程序
+
+## 后端规则
+
+- 使用 Java 17 语法特性，不要使用高版本 API
+- 所有 public API 方法返回 `ApiResponse<T>` 类型，禁止直接返回实体
+- 新增 Controller 时：公开接口放 `/api/` 前缀，管理端放 `/api/admin/` 前缀
+- 新增实体时必须添加对应的 Repository 接口（继承 `JpaRepository`）
+- 数据库操作不要写原生 SQL，使用 JPA 方法命名规则或 `@Query`
+- 不要在 Controller 中写业务逻辑，逻辑放在 Service 层
+- 所有异常由 `GlobalExceptionHandler` 统一处理，不要 try-catch 后返回 null
+
+## 前端规则
+
+- 小程序使用 `var` 而非 `let/const`（兼容性）
+- 使用 `function` 关键字而非箭头函数作为 Page 方法
+- API 调用统一通过 `request.js` 模块，不要直接调用 `wx.request`
+- 图片路径拼接：JS 侧使用 `config.baseUrl`，WXS 侧使用 `utils.BASE_URL`
+- 新增页面前先在 `app.json` 的 `pages` 数组中注册
+
+## 通用规则
+
+- 不要修改 `application.yml` 中的默认值（留给开发者本地覆盖）
+- 敏感信息（密码、密钥）通过环境变量注入，不写在配置文件中
+- 新增依赖前确认版本兼容性（Spring Boot 3.2.5 父 POM 管理版本）
+- 修改数据库相关代码后需测试 DDL 生成结果

@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, cc]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Compile
+        run: mvn compile --batch-mode
+
+      - name: Run tests
+        run: mvn test --batch-mode
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Maven Tests
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+
+      - name: Checkstyle
+        run: mvn checkstyle:check --batch-mode
+        continue-on-error: true
+
+      - name: Package
+        run: mvn package -DskipTests --batch-mode

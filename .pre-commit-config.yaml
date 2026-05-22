@@ -1,0 +1,26 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: detect-private-key
+        exclude: ^backend/src/test/
+
+  - repo: local
+    hooks:
+      - id: check-merge-conflicts
+        name: Check for merge conflict markers
+        entry: '^<{7}|^={7}|^>{7}'
+        language: pygrep
+        types: [text]
+        exclude: \.pre-commit-config\.yaml$
+
+      - id: check-plaintext-passwords
+        name: Check for plaintext passwords
+        entry: 'password\s*[:=]\s*["'']?(?!.*\$\{|CHANGE-THIS|your-)'
+        language: pygrep
+        types: [text]
+        exclude: \.pre-commit-config\.yaml$|test|Test
