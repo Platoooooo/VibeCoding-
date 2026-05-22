@@ -3,6 +3,8 @@ package com.company.miniprogram.service;
 import com.company.miniprogram.model.CompanyInfo;
 import com.company.miniprogram.repository.CompanyInfoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +16,13 @@ public class CompanyInfoService {
 
     private final CompanyInfoRepository companyInfoRepository;
 
+    @Cacheable(value = "companyInfo")
     public Optional<CompanyInfo> getCompanyInfo() {
         return companyInfoRepository.findAll().stream().findFirst();
     }
 
     @Transactional
+    @CacheEvict(value = "companyInfo", allEntries = true)
     public CompanyInfo saveCompanyInfo(CompanyInfo companyInfo) {
         // 检查是否已存在公司信息
         Optional<CompanyInfo> existing = companyInfoRepository.findAll().stream().findFirst();

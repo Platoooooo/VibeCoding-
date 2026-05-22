@@ -4,6 +4,8 @@ import com.company.miniprogram.dto.PageResponse;
 import com.company.miniprogram.model.News;
 import com.company.miniprogram.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
 
+    @Cacheable(value = "news", key = "#page + '_' + #size")
     public PageResponse<News> getPublishedNews(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<News> newsPage = newsRepository.findByStatusOrderByCreatedAtDesc(1, pageable);
@@ -23,6 +26,7 @@ public class NewsService {
     }
 
     @Transactional
+    @CacheEvict(value = "news", allEntries = true)
     public News createNews(News news) {
         if (news.getStatus() == null) {
             news.setStatus(0);
@@ -31,6 +35,7 @@ public class NewsService {
     }
 
     @Transactional
+    @CacheEvict(value = "news", allEntries = true)
     public News updateNews(Long id, News news) {
         News existing = newsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("新闻不存在"));
@@ -43,6 +48,7 @@ public class NewsService {
     }
 
     @Transactional
+    @CacheEvict(value = "news", allEntries = true)
     public void deleteNews(Long id) {
         newsRepository.deleteById(id);
     }

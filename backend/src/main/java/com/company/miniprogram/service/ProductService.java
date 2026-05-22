@@ -5,6 +5,8 @@ import com.company.miniprogram.model.Product;
 import com.company.miniprogram.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
+    @Cacheable(value = "products", key = "#keyword + '_' + #categoryId + '_' + #page + '_' + #size")
     public PageResponse<Product> getProducts(String keyword, String categoryId, int page, int size) {
         log.info("【Service查询】keyword={}, categoryId={}, page={}, size={}", keyword, categoryId, page, size);
         Pageable pageable = PageRequest.of(page - 1, size);
@@ -32,6 +35,7 @@ public class ProductService {
     }
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public Product createProduct(Product product) {
         if (product.getStatus() == null) {
             product.setStatus(1);
@@ -40,6 +44,7 @@ public class ProductService {
     }
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public Product updateProduct(Long id, Product product) {
         Product existing = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("产品不存在"));
@@ -57,6 +62,7 @@ public class ProductService {
     }
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
